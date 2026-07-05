@@ -21,12 +21,12 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"] # 🌐 Crucial for cloud cross-origin response synchronization
 )
 
-# Your verified working API key
-API_KEY = "AQ.Ab8RN6LLf7Xflf0GO3khiDucec4BfquwBZWYrRTxOyo_-m571g"
+# Your verified working API key loaded securely from the cloud environment
+API_KEY = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=API_KEY)
-
 CURRENT_SESSION = {"email": None}
 
 # 🔐 TEMPORARY MEMORY TO STORE ACTIVE OTP CODES
@@ -54,6 +54,7 @@ def seed_simulation_data(db: Session):
         send_time = base_time + timedelta(hours=i*3, minutes=random.randint(1,59))
         receive_time = send_time + timedelta(seconds=random.randint(2, 8))
         
+        # Fixed Fee Structures
         net_fee = 15.00
         routing_fee = round(amount * 0.01, 2)
         total = amount + net_fee + routing_fee
@@ -118,7 +119,7 @@ class AIParserOutputSchema(BaseModel):
     currency: str
     recipient: str
 
-# --- UPGRADED AUTHENTICATION ROUTES WITH SIMULATED 2FA OTP ---
+# --- AUTHENTICATION ROUTES WITH MASTER PASSCODE BYPASS ---
 
 @app.post("/auth/register")
 def register_node(data: RegisterSchema, db: Session = Depends(get_db)):
@@ -137,8 +138,8 @@ def request_otp(data: OTPRequestSchema, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(status_code=404, detail="Email address node not found in database.")
     
-    # Generate a cryptographically secure 6-digit number
-    secure_code = str(random.randint(100000, 999999))
+    # 🔓 FRIENDLY MASTER BYPASS: Fixed code eliminates checking cloud server logs
+    secure_code = "123456"
     OTP_STORE[data.email] = secure_code
     
     # 🖥️ TERMINAL BROADCAST SIMULATION
@@ -148,14 +149,14 @@ def request_otp(data: OTPRequestSchema, db: Session = Depends(get_db)):
     print(f"🔑 SECURITY PASSCODE KEY: {secure_code}")
     print("="*60 + "\n")
     
-    return {"status": "success", "message": "Simulated OTP transmission dispatched to terminal engine window."}
+    return {"status": "success", "message": "Master bypass code initialized successfully."}
 
 @app.post("/auth/verify-otp")
 def verify_otp(data: OTPVerifySchema, db: Session = Depends(get_db)):
     if data.email not in OTP_STORE or OTP_STORE[data.email] != data.code.strip():
         raise HTTPException(status_code=401, detail="Invalid verification code token. Handshake rejected.")
     
-    # Clear the code from memory after successful handshake validation
+    # Clear the code from memory after successful validation
     del OTP_STORE[data.email]
     
     CURRENT_SESSION["email"] = data.email
@@ -164,24 +165,31 @@ def verify_otp(data: OTPVerifySchema, db: Session = Depends(get_db)):
     
     return {"status": "success", "username": user.username, "balance": user.balance}
 
+# --- LEDGER MANAGEMENT ROUTES ---
+
 @app.get("/ledger/user")
 def fetch_user_ledger(db: Session = Depends(get_db)):
     email = CURRENT_SESSION["email"]
-    if not email: raise HTTPException(status_code=401)
+    if not email: 
+        raise HTTPException(status_code=401, detail="Unauthorized access token frame.")
     user = db.query(UserNode).filter(UserNode.email == email).first()
     personal_txs = db.query(BlockTransaction).filter(BlockTransaction.sender == user.username).order_by(BlockTransaction.serial_number.desc()).all()
     return {"ledger": personal_txs, "contacts": CONTACTS}
 
 @app.get("/ledger/admin")
 def fetch_admin_ledger(code: str, db: Session = Depends(get_db)):
-    if code != "LEO_OPERATIONS_2026": raise HTTPException(status_code=403, detail="Access Denied.")
+    if code != "LEO_OPERATIONS_2026": 
+        raise HTTPException(status_code=403, detail="Access Denied.")
     master_ledger = db.query(BlockTransaction).order_by(BlockTransaction.serial_number.desc()).all()
     return {"ledger": master_ledger}
+
+# --- AI REMITTANCE ENGINE PIPELINE ---
 
 @app.post("/transfer/process")
 def process_slang_remittance(data: TransactionInputSchema, db: Session = Depends(get_db)):
     email = CURRENT_SESSION["email"]
-    if not email: raise HTTPException(status_code=401)
+    if not email: 
+        raise HTTPException(status_code=401, detail="Session signature expired.")
     user_account = db.query(UserNode).filter(UserNode.email == email).first()
 
     try:
