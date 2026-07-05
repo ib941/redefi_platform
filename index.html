@@ -186,16 +186,15 @@
 
     </main>
 
-<script>
+    <script>
         let currentAuthMode = 'login';
         let adminAuthorizedCode = "";
         let pendingEmailSession = "";
         
         // Dynamic routing: Automatically switches between local development and live cloud production
-       // Dynamic routing: Automatically switches between local development and live cloud production
         const SERVER_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-    ? 'http://localhost:8000' 
-    : 'https://redefi-platform.onrender.com';
+            ? 'http://localhost:8000' 
+            : 'https://redefi-platform.onrender.com';
 
         function toggleAuthMode() {
             currentAuthMode = (currentAuthMode === 'login') ? 'register' : 'login';
@@ -360,6 +359,14 @@
                     body: JSON.stringify({ text })
                 });
                 const data = await res.json();
+                
+                // 🛠️ SMART DIAGNOSTIC INTERCEPTOR
+                if (!res.ok) {
+                    term.innerHTML = `<div class="text-rose-500 font-bold">🚨 SERVER ERROR (${res.status}):</div>
+                                      <div class="text-slate-400 mt-1">${data.detail || 'Unknown internal processing exception.'}</div>`;
+                    return;
+                }
+
                 term.innerHTML = '';
                 data.logs.forEach(log => {
                     let logStyle = 'text-slate-400';
@@ -373,7 +380,9 @@
                 term.scrollTop = term.scrollHeight;
                 loadUserLedger();
                 if(adminAuthorizedCode) unlockAdminPortal();
-            } catch (err) { term.innerHTML = `<div class="text-rose-500">❌ PIPELINE CRASH.</div>`; }
+            } catch (err) { 
+                term.innerHTML = `<div class="text-rose-500">❌ NETWORK ERROR: Unable to establish an active handshake link with the backend API node.</div>`; 
+            }
         }
     </script>
 </body>
