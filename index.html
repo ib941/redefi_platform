@@ -191,10 +191,7 @@
         let adminAuthorizedCode = "";
         let pendingEmailSession = "";
         
-        // Dynamic routing: Automatically switches between local development and live cloud production
-        const SERVER_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-            ? 'http://localhost:8000' 
-            : 'https://redefi-platform.onrender.com';
+        const SERVER_URL = 'https://redefi-platform.onrender.com';
 
         function toggleAuthMode() {
             currentAuthMode = (currentAuthMode === 'login') ? 'register' : 'login';
@@ -360,10 +357,9 @@
                 });
                 const data = await res.json();
                 
-                // 🛠️ SMART DIAGNOSTIC INTERCEPTOR
                 if (!res.ok) {
-                    term.innerHTML = `<div class="text-rose-500 font-bold">🚨 SERVER ERROR (${res.status}):</div>
-                                      <div class="text-slate-400 mt-1">${data.detail || 'Unknown internal processing exception.'}</div>`;
+                    term.innerHTML = `<div class="text-rose-400 font-bold font-mono">🚨 SERVER PROCESS EXCEPTION (${res.status}):</div>
+                                      <div class="text-slate-400 font-mono mt-1">${data.detail || 'Processing handshake failed.'}</div>`;
                     return;
                 }
 
@@ -381,7 +377,7 @@
                 loadUserLedger();
                 if(adminAuthorizedCode) unlockAdminPortal();
             } catch (err) { 
-                term.innerHTML = `<div class="text-rose-500">❌ NETWORK ERROR: Unable to establish an active handshake link with the backend API node.</div>`; 
+                term.innerHTML = `<div class="text-rose-500 font-mono">❌ TRANSMISSION FAILURE: Connection to the host cluster timed out or dropped.</div>`; 
             }
         }
     </script>
