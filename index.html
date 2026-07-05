@@ -192,9 +192,10 @@
         let pendingEmailSession = "";
         
         // Dynamic routing: Automatically switches between local development and live cloud production
+       // Dynamic routing: Automatically switches between local development and live cloud production
         const SERVER_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-            ? 'http://localhost:8000' 
-            : 'https://redefi-backend.onrender.com'; // We will replace this with your real Render URL next
+    ? 'http://localhost:8000' 
+    : 'https://redefi-platform.onrender.com';
 
         function toggleAuthMode() {
             currentAuthMode = (currentAuthMode === 'login') ? 'register' : 'login';
