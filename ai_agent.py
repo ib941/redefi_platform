@@ -1,11 +1,11 @@
 import os
 import random
 import requests
+import json
 from datetime import datetime, timedelta
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from google import genai
 from sqlalchemy.orm import Session
 
 import database
@@ -25,8 +25,7 @@ app.add_middleware(
 )
 
 # Load secure cloud environment keys
-API_KEY = os.getenv("GEMINI_API_KEY")
-client = genai.Client(api_key=API_KEY)
+API_KEY = os.getenv("GEMINI_API_KEY", "")
 CURRENT_SESSION = {"email": None}
 
 OTP_STORE = {}
@@ -97,6 +96,7 @@ def get_live_exchange_rate(target_currency: str):
     except Exception:
         return {"SAR": 0.27, "GBP": 1.26, "EUR": 1.08}.get(currency_code, 1.0)
 
+# --- SCHEMAS ---
 class RegisterSchema(BaseModel):
     email: str
     password: str
@@ -112,10 +112,7 @@ class OTPVerifySchema(BaseModel):
 class TransactionInputSchema(BaseModel):
     text: str
 
-class AIParserOutputSchema(BaseModel):
-    amount: int
-    currency: str
-    recipient: str
+# --- AUTHENTICATION ROUTES WITH MASTER PASSCODE BYPASS ---
 
 @app.post("/auth/register")
 def register_node(data: RegisterSchema, db: Session = Depends(get_db)):
@@ -145,6 +142,8 @@ def verify_otp(data: OTPVerifySchema, db: Session = Depends(get_db)):
     seed_simulation_data(db)
     return {"status": "success", "username": user.username, "balance": user.balance}
 
+# --- LEDGER MANAGEMENT ROUTES ---
+
 @app.get("/ledger/user")
 def fetch_user_ledger(db: Session = Depends(get_db)):
     email = CURRENT_SESSION["email"] or "ibrahim@google.com"
@@ -159,36 +158,73 @@ def fetch_admin_ledger(code: str, db: Session = Depends(get_db)):
     master_ledger = db.query(BlockTransaction).order_by(BlockTransaction.serial_number.desc()).all()
     return {"ledger": master_ledger}
 
+# --- ADAPTIVE REST AI REMITTANCE ENGINE PIPELINE ---
+
 @app.post("/transfer/process")
 def process_slang_remittance(data: TransactionInputSchema, db: Session = Depends(get_db)):
     email = CURRENT_SESSION["email"] or "ibrahim@google.com"
     user_account = get_or_create_demo_user(db, email)
 
-    try:
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=f"""
-            Analyze this casual financial instruction string: "{data.text}"
-            1. Extract the amount value strictly as a clean integer whole number.
-            2. Extract the currency intended. Map it strictly to its official 3-letter currency code (e.g., 'riyals' or 'sar' -> 'SAR', 'pounds' or 'gbp' -> 'GBP', 'euros' or 'eur' -> 'EUR', 'dollars' or 'bucks' or 'chips' -> 'USD'). If unspecified, default to 'USD'.
-            3. Map the slang recipient entity to one of our exact database keys: ['mum', 'dad', 'bro', 'mohammed', 'friend'].
-                LINGUISTIC MAP GUIDELINE:
-               - Variations like 'momma', 'mom', 'mother', 'mum', 'mummy', 'old lady', 'queen' -> 'mum'
-               - Variations like 'dad', 'father', 'poppa', 'pops', 'old man' -> 'dad'
-               - Variations like 'brother', 'bro', 'bruh', 'sib' -> 'bro'
-               - Variations like 'mohammed', 'moe', 'med' -> 'mohammed'
-               - Variations like 'friend', 'homie', 'buddy', 'pal' -> 'friend'
-            Format response to match the response schema format strictly.
-            """,
-            config={'response_mime_type': 'application/json', 'response_schema': AIParserOutputSchema},
-        )
-        extracted = response.parsed
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"AI Engine Exception: {str(e)}")
+    if not API_KEY:
+        raise HTTPException(status_code=500, detail="Deployment configuration error: Gemini API token missing from cluster host.")
 
-    amount = extracted.amount
-    currency_code = extracted.currency.upper().strip()
-    recipient_key = extracted.recipient.lower().strip()
+    # 🎛️ DYNAMIC PROTOCOL ROUTER
+    # If the key starts with AQ., pass it via Authorization Bearer Headers to bypass SDK validation locks.
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+    headers = {"Content-Type": "application/json"}
+    params = {}
+
+    if API_KEY.startswith("AQ"):
+        headers["Authorization"] = f"Bearer {API_KEY}"
+    else:
+        params["key"] = API_KEY
+
+    payload = {
+        "contents": [{
+            "parts": [{
+                "text": f"""
+                Analyze this casual financial instruction string: "{data.text}"
+                1. Extract the amount value strictly as a clean integer whole number.
+                2. Extract the currency intended. Map it strictly to its official 3-letter currency code (e.g., 'riyals' or 'sar' -> 'SAR', 'pounds' or 'gbp' -> 'GBP', 'euros' or 'eur' -> 'EUR', 'dollars' or 'bucks' or 'chips' -> 'USD'). If unspecified, default to 'USD'.
+                3. Map the slang recipient entity to one of our exact database keys: ['mum', 'dad', 'bro', 'mohammed', 'friend'].
+                    LINGUISTIC MAP GUIDELINE:
+                   - Variations like 'momma', 'mom', 'mother', 'mum', 'mummy', 'old lady', 'queen' -> 'mum'
+                   - Variations like 'dad', 'father', 'poppa', 'pops', 'old man' -> 'dad'
+                   - Variations like 'brother', 'bro', 'bruh', 'sib' -> 'bro'
+                   - Variations like 'mohammed', 'moe', 'med' -> 'mohammed'
+                   - Variations like 'friend', 'homie', 'buddy', 'pal' -> 'friend'
+                Format response to match the response schema format strictly.
+                """
+            }]
+        }],
+        "generationConfig": {
+            "responseMimeType": "application/json",
+            "responseSchema": {
+                "type": "object",
+                "properties": {
+                    "amount": {"type": "integer"},
+                    "currency": {"type": "string"},
+                    "recipient": {"type": "string"}
+                },
+                "required": ["amount", "currency", "recipient"]
+            }
+        }
+    }
+
+    try:
+        response = requests.post(url, headers=headers, params=params, json=payload, timeout=12)
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code, detail=f"Google Gateway Response: {response.text}")
+        
+        response_data = response.json()
+        raw_text_output = response_data['candidates'][0]['content']['parts'][0]['text']
+        extracted = json.loads(raw_text_output)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Adaptive Semantic Pipeline Failure: {str(e)}")
+
+    amount = extracted.get("amount", 0)
+    currency_code = extracted.get("currency", "USD").upper().strip()
+    recipient_key = extracted.get("recipient", "friend").lower().strip()
 
     logs = [
         f"[Context Parsing]: Intent extraction resolved successfully.",
