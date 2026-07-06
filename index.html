@@ -37,13 +37,13 @@
     <main class="flex-1 flex items-center justify-center p-6 w-full max-w-7xl mx-auto">
 
         <div id="auth-view" class="w-full max-w-md bg-slate-900/60 backdrop-blur-xl p-8 rounded-2xl cyan-glow transition-all duration-300">
-            
+
             <div id="credentials-form">
                 <div class="text-center mb-8">
                     <h2 id="auth-title" class="text-xl font-bold tracking-widest uppercase text-cyan-400">Access Global Node</h2>
                     <p id="auth-subtitle" class="text-xs text-slate-400 mt-2">Transmit encrypted structural verification data frames</p>
                 </div>
-                
+
                 <div class="space-y-4">
                     <div id="username-box" class="hidden">
                         <label class="text-[10px] uppercase tracking-wider text-slate-400 block mb-1.5">User Account Handle</label>
@@ -51,11 +51,11 @@
                     </div>
                     <div>
                         <label class="text-[10px] uppercase tracking-wider text-slate-400 block mb-1.5">Network Email Path</label>
-                        <input type="email" id="auth-email" value="ibrahim@google.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-cyan-400">
+                        <input type="email" id="auth-email" placeholder="you@example.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-cyan-400">
                     </div>
                     <div>
                         <label class="text-[10px] uppercase tracking-wider text-slate-400 block mb-1.5">Security Password Key</label>
-                        <input type="password" id="auth-password" value="leogoat10" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-cyan-400">
+                        <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-cyan-400">
                     </div>
 
                     <button onclick="submitAuthAction()" id="auth-btn" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3.5 rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg mt-4">
@@ -73,11 +73,11 @@
             <div id="otp-form" class="hidden animate-fade-in">
                 <div class="text-center mb-6">
                     <h2 class="text-xl font-bold tracking-widest uppercase text-cyan-400">Identity Verification</h2>
-                    <p class="text-xs text-slate-400 mt-2">A secure 6-digit confirmation token code has been dispatched. Enter the digits below to finalize terminal link.</p>
+                    <p class="text-xs text-slate-400 mt-2">A 6-digit confirmation code has been dispatched to the server log (check Render logs for this demo). Enter it below to finalize the terminal link.</p>
                 </div>
                 <div class="space-y-4">
                     <div>
-                        <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1.5 text-center">Simulated OTP Security Token</label>
+                        <label class="text-[10px] uppercase tracking-wider text-slate-500 block mb-1.5 text-center">OTP Security Token</label>
                         <input type="text" id="otp-code" maxlength="6" placeholder="******" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-center text-lg font-mono tracking-widest text-cyan-400 focus:outline-none focus:border-cyan-400">
                     </div>
                     <button onclick="submitOtpVerification()" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3.5 rounded-xl text-xs uppercase tracking-widest transition-all cursor-pointer shadow-lg mt-2">
@@ -95,7 +95,7 @@
             <div class="space-y-6">
                 <div class="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl backdrop-blur-md">
                     <p class="text-[10px] uppercase tracking-widest text-slate-500 font-bold mb-1">Liquid Balance Reserve</p>
-                    <h3 id="wallet-balance" class="text-3xl font-bold text-cyan-400 tracking-tight">$10,000.00 <span class="text-xs font-normal text-slate-400">USDC</span></h3>
+                    <h3 id="wallet-balance" class="text-3xl font-bold text-cyan-400 tracking-tight">$0.00 <span class="text-xs font-normal text-slate-400">USDC</span></h3>
                     <div class="mt-4 pt-4 border-t border-slate-800/60 flex justify-between text-xs text-slate-400">
                         <span>Validator Gas Fuel:</span> <span class="font-mono text-slate-200">0.050 ETH</span>
                     </div>
@@ -104,6 +104,13 @@
                 <div class="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl backdrop-blur-md">
                     <h4 class="text-xs uppercase tracking-widest text-slate-400 font-bold mb-4">Network Node Registry Directory</h4>
                     <div id="directory-list" class="space-y-2.5 text-xs font-mono"></div>
+                </div>
+
+                <div class="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl backdrop-blur-md">
+                    <h4 class="text-xs uppercase tracking-widest text-cyan-400 font-bold mb-3">💬 Ask ReDeFi Assistant</h4>
+                    <textarea id="support-question" rows="2" placeholder="e.g. 'Where is my last transfer?'" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-cyan-400 resize-none"></textarea>
+                    <button onclick="askSupportAssistant()" class="mt-2 w-full px-4 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-400 font-bold rounded-xl text-[10px] uppercase tracking-widest cursor-pointer">Ask</button>
+                    <div id="support-answer" class="mt-3 text-xs text-slate-400 leading-relaxed"></div>
                 </div>
             </div>
 
@@ -136,7 +143,7 @@
                     <button onclick="unlockAdminPortal()" class="bg-rose-950 text-rose-400 border border-rose-800 text-[10px] font-bold px-3 py-1 rounded-lg uppercase cursor-pointer hover:bg-rose-900 transition-colors">Override</button>
                 </div>
             </div>
-            
+
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs font-mono">
                     <thead>
@@ -159,7 +166,7 @@
             <div class="border-b border-rose-900/40 pb-4 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h3 class="text-lg font-bold text-rose-400 uppercase tracking-widest">Master Operations Audit Console</h3>
-                    <p class="text-xs text-slate-400 mt-1">Unredacted cross-network pipeline logs across all simulation entities segmented chronologically</p>
+                    <p class="text-xs text-slate-400 mt-1">Unredacted cross-network pipeline logs, segmented chronologically. Flagged transactions include an AI Compliance Copilot button.</p>
                 </div>
                 <div class="w-full md:w-80 relative">
                     <input type="text" id="admin-search-bar" onkeyup="filterAdminLedger()" placeholder="Trace Serial Hash Index (e.g. TX-104805)..." class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 pl-3 text-xs font-mono text-white focus:outline-none focus:border-rose-400">
@@ -188,11 +195,10 @@
 
     <script>
         let currentAuthMode = 'login';
-        let adminAuthorizedCode = "";
+        let adminAccessKey = "";       // held only in memory, never in source
         let pendingEmailSession = "";
-        
-        const SERVER_URL = 'https://redefi-platform.onrender.com';
 
+        const SERVER_URL = 'https://redefi-platform.onrender.com';
         function toggleAuthMode() {
             currentAuthMode = (currentAuthMode === 'login') ? 'register' : 'login';
             document.getElementById('auth-title').innerText = currentAuthMode === 'login' ? 'Access Global Node' : 'Register Asset Node';
@@ -209,7 +215,7 @@
             const email = document.getElementById('auth-email').value;
             const password = document.getElementById('auth-password').value;
             const username = document.getElementById('auth-username').value;
-            
+
             if (currentAuthMode === 'register') {
                 try {
                     const res = await fetch(`${SERVER_URL}/auth/register`, {
@@ -217,29 +223,29 @@
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({ email, password, username })
                     });
-                    if(!res.ok) { alert((await res.json()).detail); return; }
-                    alert('Registration successfully compiled into local database tables! Switching to login layer.');
+                    if (!res.ok) { alert((await res.json()).detail); return; }
+                    alert('Registration successful. Switching to login.');
                     toggleAuthMode();
                 } catch (e) { alert('Handshake Blocked.'); }
             } else {
                 try {
-                    const res = await fetch(`${SERVER_URL}/auth/request-otp`, {
+                    const res = await fetch(`${SERVER_URL}/auth/login`, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ email })
+                        body: JSON.stringify({ email, password })
                     });
-                    if(!res.ok) { alert((await res.json()).detail); return; }
-                    
+                    if (!res.ok) { alert((await res.json()).detail); return; }
+
                     pendingEmailSession = email;
                     document.getElementById('credentials-form').classList.add('hidden');
                     document.getElementById('otp-form').classList.remove('hidden');
-                } catch(e) { alert('Handshake Blocked.'); }
+                } catch (e) { alert('Handshake Blocked.'); }
             }
         }
 
         async function submitOtpVerification() {
             const code = document.getElementById('otp-code').value;
-            if(!code || code.length !== 6) { alert("Secure 6-digit confirmation token string required."); return; }
+            if (!code || code.length !== 6) { alert("6-digit confirmation code required."); return; }
 
             try {
                 const res = await fetch(`${SERVER_URL}/auth/verify-otp`, {
@@ -247,43 +253,47 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ email: pendingEmailSession, code })
                 });
-                
-                if(!res.ok) { alert("2FA TOKEN SECURITY REJECTION: Code mismatch or signature expired."); return; }
+
+                if (!res.ok) { alert((await res.json()).detail || "Code mismatch or expired."); return; }
                 const data = await res.json();
-                
+
                 document.getElementById('nav-user').innerText = data.username;
                 updateBalanceDisplay(data.balance);
                 document.getElementById('auth-view').classList.add('hidden');
                 document.getElementById('nav-bar').classList.remove('hidden');
                 document.getElementById('home-view').classList.remove('hidden');
                 loadUserLedger();
-            } catch(e) { alert('Verification link down.'); }
+            } catch (e) { alert('Verification link down.'); }
         }
 
         function switchTab(target) {
             document.getElementById('home-view').classList.toggle('hidden', target !== 'home');
             document.getElementById('ledger-view').classList.toggle('hidden', target !== 'ledger');
             document.getElementById('admin-view').classList.toggle('hidden', target !== 'admin');
-            
+
             document.getElementById('tab-home').classList.toggle('active-tab', target === 'home');
             document.getElementById('tab-ledger').classList.toggle('active-tab', target === 'ledger');
-            if(adminAuthorizedCode) document.getElementById('tab-admin').classList.toggle('active-tab', target === 'admin');
+            if (adminAccessKey) document.getElementById('tab-admin').classList.toggle('active-tab', target === 'admin');
         }
 
         function updateBalanceDisplay(val) {
             document.getElementById('wallet-balance').innerHTML = `$${Number(val).toLocaleString(undefined, {minimumFractionDigits: 2})} <span class="text-xs font-normal text-slate-500">USDC</span>`;
         }
 
+        // Admin key now travels as a request header, never as a URL query string,
+        // and is never hardcoded anywhere in this file.
         async function unlockAdminPortal() {
-            const code = document.getElementById('override-code').value;
+            const key = document.getElementById('override-code').value;
             try {
-                const res = await fetch(`${SERVER_URL}/ledger/admin?code=${code}`);
-                if(!res.ok) { alert("SECURITY REJECTION: Cryptographic credentials unauthorized."); return; }
-                adminAuthorizedCode = code;
+                const res = await fetch(`${SERVER_URL}/ledger/admin`, {
+                    headers: { 'x-admin-key': key }
+                });
+                if (!res.ok) { alert("Access denied."); return; }
+                adminAccessKey = key;
                 document.getElementById('tab-admin').classList.remove('hidden');
                 switchTab('admin');
                 renderAdminLedger((await res.json()).ledger);
-            } catch(e) {}
+            } catch (e) {}
         }
 
         async function loadUserLedger() {
@@ -299,7 +309,7 @@
 
                 const tableBody = document.getElementById('user-table-rows');
                 tableBody.innerHTML = '';
-                if(data.ledger.length === 0) document.getElementById('user-empty-notice').classList.remove('hidden');
+                if (data.ledger.length === 0) document.getElementById('user-empty-notice').classList.remove('hidden');
                 else {
                     document.getElementById('user-empty-notice').classList.add('hidden');
                     data.ledger.forEach(tx => {
@@ -310,17 +320,18 @@
                                 <td class="text-white font-semibold">${tx.amount.toLocaleString()} ${tx.currency}</td>
                                 <td class="text-slate-400">$${(tx.gas_fee + tx.routing_fee).toFixed(2)}</td>
                                 <td class="text-cyan-400 font-bold">$${tx.total.toLocaleString(undefined, {minimumFractionDigits:2})}</td>
-                                <td class="text-right"><span class="px-2 py-0.5 text-[10px] font-bold rounded ${tx.status === 'Success'?'bg-cyan-950 text-cyan-400':'bg-rose-950 text-rose-400'}">${tx.status.toUpperCase()}</span></td>
+                                <td class="text-right"><span class="px-2 py-0.5 text-[10px] font-bold rounded ${tx.status === 'Success' ? 'bg-cyan-950 text-cyan-400' : 'bg-rose-950 text-rose-400'}">${tx.status.toUpperCase()}</span></td>
                             </tr>`;
                     });
                 }
-            } catch(e){}
+            } catch (e) {}
         }
 
         function renderAdminLedger(ledgerList) {
             const tableBody = document.getElementById('admin-table-rows');
             tableBody.innerHTML = '';
             ledgerList.forEach(tx => {
+                const isFlagged = tx.status !== 'Success';
                 tableBody.innerHTML += `
                     <tr class="border-b border-slate-900/60 py-3.5 font-mono text-xs hover:bg-slate-900/30 tx-row-item" data-serial="${tx.serial_number}">
                         <td class="py-3.5 text-rose-400 font-bold">${tx.serial_number}</td>
@@ -329,9 +340,52 @@
                         <td class="text-white font-semibold">${tx.amount.toLocaleString()} ${tx.currency}</td>
                         <td class="text-slate-500 text-[11px]">${tx.send_time}</td>
                         <td class="text-slate-500 text-[11px]">${tx.receive_time}</td>
-                        <td class="text-right"><span class="px-2 py-0.5 text-[10px] font-bold rounded ${tx.status==='Success'?'bg-emerald-950 text-emerald-400':'bg-rose-950 text-rose-400'}">${tx.status === 'Success' ? 'APPROVED' : 'HELD_AUDIT'}</span></td>
-                    </tr>`;
+                        <td class="text-right">
+                            <span class="px-2 py-0.5 text-[10px] font-bold rounded ${tx.status === 'Success' ? 'bg-emerald-950 text-emerald-400' : 'bg-rose-950 text-rose-400'}">${tx.status === 'Success' ? 'APPROVED' : 'HELD_AUDIT'}</span>
+                            ${isFlagged ? `<button onclick="explainTransaction('${tx.serial_number}', this)" class="ml-2 px-2 py-0.5 text-[10px] font-bold rounded bg-cyan-950 text-cyan-400 border border-cyan-900 cursor-pointer hover:bg-cyan-900">🤖 Explain</button>` : ''}
+                        </td>
+                    </tr>
+                    ${isFlagged ? `<tr class="tx-row-item" data-serial="${tx.serial_number}"><td colspan="7"><div id="note-${tx.serial_number}" class="text-[11px] text-slate-400 italic px-2 pb-3"></div></td></tr>` : ''}
+                    `;
             });
+        }
+
+        // AI Compliance Copilot: asks Gemini why a flagged transaction was held
+        // and what the recommended next step is.
+        async function explainTransaction(serial, btn) {
+            const noteBox = document.getElementById(`note-${serial}`);
+            noteBox.innerText = 'Generating compliance note...';
+            btn.disabled = true;
+            try {
+                const res = await fetch(`${SERVER_URL}/compliance/explain/${serial}`, {
+                    method: 'POST',
+                    headers: { 'x-admin-key': adminAccessKey }
+                });
+                const data = await res.json();
+                noteBox.innerText = res.ok ? `📝 ${data.note}` : `Error: ${data.detail}`;
+            } catch (e) {
+                noteBox.innerText = 'Could not reach compliance service.';
+            }
+            btn.disabled = false;
+        }
+
+        // AI Customer Support Q&A over the logged-in user's own ledger data.
+        async function askSupportAssistant() {
+            const question = document.getElementById('support-question').value;
+            const answerBox = document.getElementById('support-answer');
+            if (!question) return;
+            answerBox.innerText = 'Thinking...';
+            try {
+                const res = await fetch(`${SERVER_URL}/support/ask`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ question })
+                });
+                const data = await res.json();
+                answerBox.innerText = res.ok ? data.answer : `Error: ${data.detail}`;
+            } catch (e) {
+                answerBox.innerText = 'Assistant is unreachable right now.';
+            }
         }
 
         function filterAdminLedger() {
@@ -346,7 +400,7 @@
         async function dispatchTransaction() {
             const text = document.getElementById('prompt-string').value;
             const term = document.getElementById('output-terminal-logs');
-            if(!text) return;
+            if (!text) return;
             term.innerHTML = `<div class="text-slate-500 animate-pulse">[Transmitting intent packet frames to AI routing model...]</div>`;
 
             try {
@@ -356,7 +410,7 @@
                     body: JSON.stringify({ text })
                 });
                 const data = await res.json();
-                
+
                 if (!res.ok) {
                     term.innerHTML = `<div class="text-rose-400 font-bold font-mono">🚨 SERVER PROCESS EXCEPTION (${res.status}):</div>
                                       <div class="text-slate-400 font-mono mt-1">${data.detail || 'Processing handshake failed.'}</div>`;
@@ -375,9 +429,9 @@
                 document.getElementById('prompt-string').value = '';
                 term.scrollTop = term.scrollHeight;
                 loadUserLedger();
-                if(adminAuthorizedCode) unlockAdminPortal();
-            } catch (err) { 
-                term.innerHTML = `<div class="text-rose-500 font-mono">❌ TRANSMISSION FAILURE: Connection to the host cluster timed out or dropped.</div>`; 
+                if (adminAccessKey) unlockAdminPortal();
+            } catch (err) {
+                term.innerHTML = `<div class="text-rose-500 font-mono">❌ TRANSMISSION FAILURE: Connection to the host cluster timed out or dropped.</div>`;
             }
         }
     </script>
