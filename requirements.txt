@@ -1,6 +1,6 @@
 fastapi
 uvicorn
-requests
 sqlalchemy
-google-genai
+requests
+bcrypt
 pydantic
